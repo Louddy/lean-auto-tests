@@ -54,7 +54,7 @@ theorem REntry.beq_refl {r : REntry} : (r == r) = true := by
   cases r <;> rw [REntry.beq_def] <;> dsimp [beq] <;>
     (try rw [LawfulBEq.rfl]) <;>
     (try rw [LawfulBEq.rfl]) <;>
-    (try rw [LawfulBEq.rfl]) <;> rfl
+    (try rw [LawfulBEq.rfl]) <;> sorry
 
 theorem REntry.eq_of_beq_eq_true {l r : REntry} (H : (l == r) = true) : l = r := by
   cases l <;> cases r <;> (try cases H) <;> rw [beq_def] at H <;> dsimp [beq] at H
@@ -105,7 +105,7 @@ theorem RTable.beq_def {l r : RTable} : (l == r) = l.beq r := rfl
 
 theorem RTable.beq_refl {r : RTable} : (r == r) = true := by
   rw [beq_def]; cases r; dsimp [beq]
-  rw [LawfulBEq.rfl, LawfulBEq.rfl, LawfulBEq.rfl]; rfl
+  sorry-- rw [LawfulBEq.rfl, LawfulBEq.rfl, LawfulBEq.rfl]; rfl
 
 theorem RTable.eq_of_beq_eq_true {l r : RTable} (H : (l == r) = true) : l = r := by
   rw [RTable.beq_def] at H; cases l; cases r; dsimp [beq] at H

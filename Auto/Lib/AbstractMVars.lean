@@ -132,7 +132,7 @@ def abstractMVars (e : Expr) : MetaM AbstractMVarsResult := do
   setNGen s.ngen
   setMCtx s.mctx
   let e := s.lctx.mkLambda s.fvars e
-  pure { paramNames := s.paramNames, numMVars := s.fvars.size, expr := e }
+  pure { paramNames := s.paramNames, mvars := s.fvars, expr := e }
 
 def openAbstractMVarsResult (a : AbstractMVarsResult) : MetaM (Array Expr × Array BinderInfo × Expr) := do
   let us ← a.paramNames.mapM fun _ => mkFreshLevelMVar
@@ -145,7 +145,7 @@ def abstractMVarsForall (e : Expr) : MetaM AbstractMVarsResult := do
   setNGen s.ngen
   setMCtx s.mctx
   let e := s.lctx.mkForall s.fvars e
-  pure { paramNames := s.paramNames, numMVars := s.fvars.size, expr := e }
+  pure { paramNames := s.paramNames, mvars := s.fvars, expr := e }
 
 def abstractMVarsLambdaWithIds (e : Expr) : MetaM (Expr × Array Expr × Array Name × Array Level) := do
   let e ← instantiateMVars e
@@ -180,4 +180,4 @@ def abstractMVarsLambda (e : Expr) : MetaM AbstractMVarsResult := do
   setNGen s.ngen
   setMCtx s.mctx
   let e := s.lctx.mkLambda s.fvars e
-  pure { paramNames := s.paramNames, numMVars := s.fvars.size, expr := e }
+  pure { paramNames := s.paramNames, mvars := s.fvars, expr := e }

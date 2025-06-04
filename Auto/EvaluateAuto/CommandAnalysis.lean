@@ -28,7 +28,7 @@ def processHeaderEnsuring (header : Syntax) (opts : Options) (messages : Message
     (inputCtx : Parser.InputContext) (trustLevel : UInt32 := 0) (leakEnv := false) (ensuring : Array Import := #[])
     : IO (Environment × MessageLog) := do
   try
-    let env ← importModules (leakEnv := leakEnv) (headerToImports header ++ ensuring) opts trustLevel
+    let env ← importModules (leakEnv := leakEnv) (headerToImports ⟨header⟩ ++ ensuring) opts trustLevel
     pure (env, messages)
   catch e =>
     let env ← mkEmptyEnvironment

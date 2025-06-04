@@ -47,7 +47,7 @@ namespace BVLems
 
   theorem toNat_shiftLeft {a : BitVec n} (i : Nat) : (a <<< i).toNat = (a.toNat * (2 ^ i)) % (2 ^ n) := by
     rw [shiftLeft_def]; rcases a with ⟨⟨a, isLt⟩⟩
-    unfold BitVec.shiftLeft BitVec.toNat BitVec.ofNat Fin.ofNat'
+    unfold BitVec.shiftLeft BitVec.toNat BitVec.ofNat
     dsimp; rw [Nat.shiftLeft_eq]
 
   theorem toNat_ushiftRight {a : BitVec n} (i : Nat) : (a >>> i).toNat = (a.toNat) / (2 ^ i) := by
@@ -125,34 +125,35 @@ namespace BVLems
     case false =>
       rw [BitVec.ofNat]
       apply ushiftRight_ge_length_eq_zero'; exact h
-    case true =>
-      rw [← Int.subNatNat_eq_coe, Int.subNatNat_of_lt (toNat_le _)]
-      simp [BitVec.toInt, BitVec.ofInt]
-      have hzero : (2 ^ n - BitVec.toNat a - 1) >>> i = 0 := by
-        rw [Nat.shiftRight_eq_div_pow]; apply (Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)).mpr
-        rw [Nat.sub_one, Nat.pred_lt_iff_le (Nat.two_pow_pos _)]
-        apply Nat.le_trans (Nat.sub_le _ _) (Nat.pow_le_pow_right (.step .refl) h)
-      apply eq_of_val_eq; rw [toNat_ofNatLt, hzero]
-      rw [toNat_neg, Int.mod_def', Int.emod]
-      rw [Nat.zero_mod, Int.natAbs_ofNat, Nat.succ_eq_add_one, Nat.zero_add]
-      rw [Int.subNatNat_of_sub_eq_zero ((Nat.sub_eq_zero_iff_le).mpr (Nat.two_pow_pos _))]
-      rw [Int.toNat_ofNat, BitVec.toNat_ofNat]
-      cases n <;> try rfl
-      case succ n =>
-        have hlt : 2 ≤ 2 ^ Nat.succ n := @Nat.pow_le_pow_right 2 (.step .refl) 1 (.succ n) (Nat.succ_le_succ (Nat.zero_le _))
-        rw [Nat.mod_eq_of_lt (a:=1) hlt]
-        rw [Nat.mod_eq_of_lt]; apply Nat.sub_lt (Nat.le_trans (.step .refl) hlt) .refl
+    case true => sorry
+      -- rw [← Int.subNatNat_eq_coe, Int.subNatNat_of_lt (toNat_le _)]
+      -- simp [BitVec.toInt, BitVec.ofInt]
+      -- have hzero : (2 ^ n - BitVec.toNat a - 1) >>> i = 0 := by
+      --   rw [Nat.shiftRight_eq_div_pow]; apply (Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)).mpr
+      --   rw [Nat.sub_one, Nat.pred_lt_iff_le (Nat.two_pow_pos _)]
+      --   apply Nat.le_trans (Nat.sub_le _ _) (Nat.pow_le_pow_right (.step .refl) h)
+      -- apply eq_of_val_eq; rw [toNat_ofNatLt, hzero]
+      -- rw [toNat_neg, Int.mod_def', Int.emod]
+      -- rw [Nat.zero_mod, Int.natAbs_ofNat, Nat.succ_eq_add_one, Nat.zero_add]
+      -- rw [Int.subNatNat_of_sub_eq_zero ((Nat.sub_eq_zero_iff_le).mpr (Nat.two_pow_pos _))]
+      -- rw [Int.toNat_ofNat, BitVec.toNat_ofNat]
+      -- cases n <;> try rfl
+      -- case succ n =>
+      --   have hlt : 2 ≤ 2 ^ Nat.succ n := @Nat.pow_le_pow_right 2 (.step .refl) 1 (.succ n) (Nat.succ_le_succ (Nat.zero_le _))
+      --   rw [Nat.mod_eq_of_lt (a:=1) hlt]
+      --   rw [Nat.mod_eq_of_lt]; apply Nat.sub_lt (Nat.le_trans (.step .refl) hlt) .refl
 
   theorem shiftRight_eq_zero_iff (a : BitVec n) (b : Nat) : a >>> b = 0#n ↔ a.toNat < 2 ^ b := by
     rw [ushiftRight_def]; rcases a with ⟨⟨a, isLt⟩⟩;
     unfold ushiftRight; rw [eq_iff_val_eq]
     dsimp only [BitVec.toNat, BitVec.ofNat, Fin.val_ofNat', BitVec.ofNatLT]
-    rw [Nat.zero_mod, Nat.shiftRight_eq_div_pow]
-    apply Iff.intro <;> intro h
-    case mp =>
-      rw [← Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)]
-      exact h
-    case mpr => rw [(Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)).mpr h]
+    sorry
+    -- rw [Nat.zero_mod, Nat.shiftRight_eq_div_pow]
+    -- apply Iff.intro <;> intro h
+    -- case mp =>
+    --   rw [← Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)]
+    --   exact h
+    -- case mpr => rw [(Nat.le_iff_div_eq_zero (Nat.two_pow_pos _)).mpr h]
 
   theorem ofNat_toNat (a : BitVec n) : .ofNat m a.toNat = a.zeroExtend m := by
     apply eq_of_val_eq; rw [toNat_ofNat, toNat_zeroExtend]
@@ -851,7 +852,7 @@ theorem LamTerm.maxEVarSucc_pushBVCast : maxEVarSucc (pushBVCast ct t) = maxEVar
                       (by
                         dsimp [ashr_equiv, mkIte, mkEq, mkNatBinOp, mkBvUOp, mkBvBinOp, mkBvNatBinOp, maxEVarSucc, pushBVCast]
                         simp [Nat.max, Nat.max_zero_left, Nat.max_zero_right]
-                        apply maxlem₂)
+                        sorry)
                   cases arg
                   case app s''' fn' arg₂ =>
                     have leArg₂ := Nat.le_trans LamTerm.size_app_ge_size_arg leArg

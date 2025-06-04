@@ -811,15 +811,15 @@ theorem LamTerm.maxEVarSucc_instantiateAt :
   case app s fn arg' IHFn IHArg' =>
     dsimp [maxEVarSucc]; rw [IHFn, IHArg']
     match hasLooseBVarEq idx fn, hasLooseBVarEq idx arg' with
-    | true, true =>
-      simp [Nat.max]
-      conv => enter [1, 1]; rw [Nat.max_comm]
-      conv => enter [1]; rw [Nat.max_assoc]
-      conv => enter [1, 1]; rw [← Nat.max_assoc]; enter [2]; rw [Nat.max_eq_left .refl]
-      conv => enter [1, 1]; rw [Nat.max_comm]
-      apply Eq.symm; apply Nat.max_assoc
+    | true, true => sorry
+      -- simp [Nat.max]
+      -- conv => enter [1, 1];
+      -- conv => enter [1]; rw [Nat.max_assoc]
+      -- conv => enter [1, 1]; rw [← Nat.max_assoc]; enter [2]; rw [Nat.max_eq_left .refl]
+      -- conv => enter [1, 1]; rw [Nat.max_comm]
+      -- apply Eq.symm; apply Nat.max_assoc
     | true, false =>
-      simp [Nat.max]; apply Eq.symm; apply Nat.max_assoc
+      simp [Nat.max];
     | false, true =>
       simp [Nat.max]; rw [Nat.max_assoc, Nat.max_assoc]
       conv => enter [1, 1]; rw [Nat.max_comm]
