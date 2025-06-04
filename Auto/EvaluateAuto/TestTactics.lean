@@ -1,4 +1,4 @@
-import Lean
+import Aesop
 import Auto.EvaluateAuto.OS
 import Auto.EvaluateAuto.Result
 import Auto.EvaluateAuto.ConstAnalysis
@@ -8,6 +8,7 @@ import Auto.EvaluateAuto.CommandAnalysis
 import Auto.Tactic
 import Auto.EvaluateAuto.AutoConfig
 import Std
+
 open Lean
 
 namespace EvalAuto
@@ -49,20 +50,25 @@ section Tactics
     let usedThmTerms : Array Term := usedThmNames.map (fun name => ⟨mkIdent name⟩)
     evalTactic (← `(tactic| intros; simp_all [$[$usedThmTerms:term],*]))
 
-  private def mkAesopConfigStx (subHeartbeats : Nat) : CoreM Syntax := do
+  private def mkAesopConfigStx (subHeartbeats : Nat) : CoreM (TSyntax `Aesop.tactic_clause) := do
     let synth : SourceInfo := SourceInfo.synthetic default default false
     let shStx := Syntax.node synth `num #[Syntax.atom synth (toString subHeartbeats)]
     let shStx := TSyntax.mk shStx
     let stx ← `(term | { maxSimpHeartbeats := $shStx, maxRuleHeartbeats := $shStx, maxUnfoldHeartbeats := $shStx })
-    return Syntax.node synth `Aesop.Frontend.Parser.«tactic_clause(Config:=_)»
-           #[Syntax.atom synth "(", Syntax.atom synth "config", Syntax.atom synth ":=", stx]
+    `(tactic_clause| (config := $stx:term))
+    -- return TSyntax.mk `(aesop $clauses:Aesop.tactic_clause*)
+    -- return Syntax.node synth `Aesop.Frontend.Parser.«tactic_clause(Config:=_)»
+    --        #[Syntax.atom synth "(", Syntax.atom synth "config", Syntax.atom synth ":=", stx]
 
-  private def mkAesopStx (tacticClauses : Array Syntax) : TSyntax `tactic :=
-    let synth : SourceInfo := SourceInfo.synthetic default default false
-    TSyntax.mk (
-      Syntax.node synth `Aesop.Frontend.Parser.aesopTactic
-        #[Syntax.atom synth "aesop", Syntax.node synth `null tacticClauses]
-    )
+
+  private def mkAesopStx (tacticClauses : Array (TSyntax `Aesop.tactic_clause)) : TSyntax `tactic :=
+    -- let synth : SourceInfo := SourceInfo.synthetic default default false
+    Unhygienic.run `(tactic| aesop $tacticClauses:Aesop.tactic_clause*)
+    -- TSyntax.mk (
+    --   Syntax.node synth `Aesop.Frontend.Parser.aesopTactic
+    --     #[Syntax.atom synth "aesop", Syntax.node synth `null tacticClauses]
+    -- )
+
 
   /--
     Tactic sequence: `intros; aesop`
@@ -91,21 +97,26 @@ section Tactics
     evalTactic stx
   where
     synth : SourceInfo := SourceInfo.synthetic default default false
-    mkAddIdentStx (ident : Ident) : Syntax :=
-      Syntax.node synth `Aesop.Frontend.Parser.«tactic_clause(Add_)»
-        #[Syntax.atom synth "(", Syntax.atom synth "add",
-          Syntax.node synth `null
-            #[Syntax.node synth `Aesop.Frontend.Parser.rule_expr___
-              #[Syntax.node synth `Aesop.Frontend.Parser.feature_
-                #[Syntax.node synth `Aesop.Frontend.Parser.phaseUnsafe
-                  #[Syntax.atom synth "unsafe"]
-                ],
-                Syntax.node synth `Aesop.Frontend.Parser.rule_expr_
-                  #[Syntax.node synth `Aesop.Frontend.Parser.featIdent #[ident]]
-              ]
-            ],
-            Syntax.atom synth ")"
-        ]
+    mkAddIdentStx (ident : Ident) : (TSyntax `Aesop.tactic_clause) :=
+      let feat := Unhygienic.run `(feature| $ident:ident)
+      let rules : TSyntax `Aesop.rule_expr := Unhygienic.run `(rule_expr| $feat:Aesop.feature)
+      Unhygienic.run  `(tactic_clause| (add unsafe $rules:Aesop.rule_expr))
+
+    -- mkAddIdentStx (ident : Ident) : Syntax :=
+    --   Syntax.node synth `Aesop.Frontend.Parser.«tactic_clause(Add_)»
+    --     #[Syntax.atom synth "(", Syntax.atom synth "add",
+    --       Syntax.node synth `null
+    --         #[Syntax.node synth `Aesop.Frontend.Parser.rule_expr___
+    --           #[Syntax.node synth `Aesop.Frontend.Parser.feature_
+    --             #[Syntax.node synth `Aesop.Frontend.Parser.phaseUnsafe
+    --               #[Syntax.atom synth "unsafe"]
+    --             ],
+    --             Syntax.node synth `Aesop.Frontend.Parser.rule_expr_
+    --               #[Syntax.node synth `Aesop.Frontend.Parser.featIdent #[ident]]
+    --           ]
+    --         ],
+    --         Syntax.atom synth ")"
+    --     ]
 
   def useDuper (ci : ConstantInfo) : TacticM Unit := do
     let .some proof := ci.value?

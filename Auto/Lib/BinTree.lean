@@ -7,6 +7,7 @@ import Auto.Lib.Containers
 import Auto.Lib.Pos
 -- Make sure that `Lean.toExpr Nat` is overriden
 import Auto.Lib.ToExprExtra
+import Init.Core
 
 /-
   Polymorphic binary tree
