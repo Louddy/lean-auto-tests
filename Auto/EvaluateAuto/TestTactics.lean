@@ -8,6 +8,7 @@ import Auto.EvaluateAuto.CommandAnalysis
 import Auto.Tactic
 import Auto.EvaluateAuto.AutoConfig
 import Std
+import Aesop
 open Lean
 
 namespace EvalAuto
