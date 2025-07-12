@@ -206,7 +206,7 @@ end Tactics
 /--
   Use `runWithEffectOfCommands` to run tactics at the place just before
   the command that created the constant `name`\
-  Note: Use `initSrcSearchPath` to get SearchPath of source files
+  Note: Use `getSrcSearchPath` to get SearchPath of source files
 -/
 /- **TODO: Fix Evaluation Issue** -/
 def runTacticsAtConstantDeclaration
@@ -272,7 +272,7 @@ instance : ToString EvalTacticConfig where
 /- **TODO: Fix Evaluation Issue** -/
 /--
   Effectively `runTacticsAtConstantDeclaration` at each constant in `modName` which satisfies `filter`\
-  Note: Use `initSrcSearchPath` to get SearchPath of source files
+  Note: Use `getSrcSearchPath` to get SearchPath of source files
 
   For the `i`-th theorem `name` in `names`, its entry in the result file has the following form:
   `<i> #[<result> <time> <heartbeats>, ⋯, <result> <time> <heartbeats>] <name>`
@@ -483,7 +483,7 @@ where
         "]",
         "",
         "def action : CoreM Unit := do",
-        "  let p ← initSrcSearchPath",
+        "  let p ← getSrcSearchPath",
         s!"  let _ ← evalTacticsAtModule ({repr mm}) p (fun ci => humanThms.contains ci.name)",
         s!"    {lb} maxHeartbeats := {config.maxHeartbeats}, tactics := #[{tacsStr}],",
         s!"      logFile := {repr (logPath ++ ".log")}, resultFile := {repr (logPath ++ ".result")},",
