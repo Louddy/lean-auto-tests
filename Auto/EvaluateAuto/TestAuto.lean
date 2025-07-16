@@ -246,7 +246,7 @@ def leanFileLinesCallingRunAutoOnConsts
     "]",
     "",
     "def action : CoreM Unit := do",
-    "  let p ← initSrcSearchPath",
+    "  let p ← getSrcSearchPath",
     s!"  let _ ← runAutoOnConsts",
     s!"    {lb} maxHeartbeats := {config.maxHeartbeats}, timeout := {config.timeout},",
     s!"      solverConfig := {repr config.solverConfig},",
