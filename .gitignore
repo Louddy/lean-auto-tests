@@ -3,3 +3,4 @@
 /.zeport_ignore
 /lakefile.olean
 /.lake
+.DS_Store
