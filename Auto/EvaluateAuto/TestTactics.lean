@@ -58,7 +58,9 @@ section Tactics
     `(tactic_clause| (config := $stx:term))
 
   private def mkAesopStx (tacticClauses : Array (TSyntax `Aesop.tactic_clause)) : TSyntax `tactic :=
-    Unhygienic.run `(tactic| aesop $tacticClauses:Aesop.tactic_clause*)
+    Unhygienic.run `(tactic|
+      set_option aesop.dev.statefulForward false in
+      aesop $tacticClauses:Aesop.tactic_clause*)
 
   /--
     Tactic sequence: `intros; aesop`
@@ -90,7 +92,7 @@ section Tactics
     mkAddIdentStx (ident : Ident) : (TSyntax `Aesop.tactic_clause) :=
       let feat := Unhygienic.run `(feature| $ident:ident)
       let rules : TSyntax `Aesop.rule_expr := Unhygienic.run `(rule_expr| $feat:Aesop.feature)
-      Unhygienic.run  `(tactic_clause| (add unsafe $rules:Aesop.rule_expr))
+      Unhygienic.run  `(tactic_clause| (add safe forward $rules:Aesop.rule_expr))
 
   def useDuper (ci : ConstantInfo) : TacticM Unit := do
     let .some proof := ci.value?
