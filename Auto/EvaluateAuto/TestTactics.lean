@@ -90,7 +90,7 @@ section Tactics
     mkAddIdentStx (ident : Ident) : (TSyntax `Aesop.tactic_clause) :=
       let feat := Unhygienic.run `(feature| $ident:ident)
       let rules : TSyntax `Aesop.rule_expr := Unhygienic.run `(rule_expr| $feat:Aesop.feature)
-      Unhygienic.run  `(tactic_clause| (add unsafe $rules:Aesop.rule_expr))
+      Unhygienic.run  `(tactic_clause| (add safe forward $rules:Aesop.rule_expr))
 
   def useDuper (ci : ConstantInfo) : TacticM Unit := do
     let .some proof := ci.value?
